@@ -1,0 +1,12 @@
+---
+ref: tutorial
+name: tutorial
+description: Hands-on tutorial for getting started with StackStorm
+keywords: 
+    - tutorial
+    - stackstorm
+    - st2
+    - encore
+version: 0.1.0
+author: Encore Technologies
+email: code@encore.tech
