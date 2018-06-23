@@ -1,0 +1,11 @@
+---
+name: nasa_apod_twitter_post
+pack: tutorial
+description: "Queries NASA's APOD (Astronomy Picture Of the Day) API to get the link to the picture of the day, then posts that link to Twitter"
+runner_type: "mistral-v2"
+enabled: true
+entry_point: workflows/nasa_apod_twitter_post.yaml
+parameters:
+  extra_message:
+    type: string
+    default: ''

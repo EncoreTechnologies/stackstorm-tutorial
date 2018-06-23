@@ -17,8 +17,7 @@ def parse_args():
                         help='The date [YYYY-MM-DD] of the APOD image to retrieve.')
     parser.add_argument('--hd',
                         help='Retrieve the high resolution image.',
-                        type=bool,
-                        default=False)
+                        action='store_true')
     parser.add_argument('-a', '--api-key',
                         help='API key to use for api.nasa.gov.',
                         default=DEMO_API_KEY)
@@ -26,11 +25,10 @@ def parse_args():
 
 
 def get_apod_metadata(args):
-    params = {'api_key': args.api_key}
+    params = {'api_key': args.api_key,
+              'hd': args.hd}
     if args.date is not None:
         params['date'] = args.date
-    if args.hd is not None:
-        params['hd'] = args.hd
 
     response = requests.get(API_URL, params=params)
     response.raise_for_status()
@@ -39,4 +37,4 @@ def get_apod_metadata(args):
 if __name__ == "__main__":
     args = parse_args()
     metadata = get_apod_metadata(args)
-    print(json.dumps(metadata, indent=4))
+    print(metadata['hdurl'] if args.hd else metadata['url'])

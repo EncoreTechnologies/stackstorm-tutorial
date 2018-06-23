@@ -1,0 +1,19 @@
+version: '2.0'
+
+tutorial.nasa_apod_twitter_post:
+  type: direct
+  input:
+    - extra_message
+
+  tasks:
+    get_apod_url:
+      action: tutorial.nasa_apod
+      publish:
+        apod_url: "{{ task('get_apod_url').result.result.url }}"
+      on-success:
+        - post_to_twitter
+
+    post_to_twitter:
+      action: twitter.update_status
+      input:
+        status: "{{ _.extra_message }} {{ _.apod_url }}"
