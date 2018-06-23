@@ -1,0 +1,14 @@
+---
+name: nasa_apod_copy
+pack: tutorial
+description: "copy of etc/nasa_apod.py"
+runner_type: "local-shell-script"
+enabled: true
+entry_point: nasa_apod_copy.py
+parameters:
+  api_key:
+    type: string
+  hd:
+    type: boolean
+  date:
+    type: string

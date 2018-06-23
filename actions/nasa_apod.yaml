@@ -1,0 +1,19 @@
+---
+name: nasa_apod
+pack: tutorial
+description: "Queries NASA's APOD (Astronomy Picture Of the Day) API to get the link to the picture of the day."
+runner_type: "python-script"
+enabled: true
+entry_point: nasa_apod.py
+parameters:
+  api_key:
+    type: string
+    description: "API key to use for api.nasa.gov."
+    default: "DEMO_KEY"
+  hd:
+    type: boolean
+    description: "Retrieve the high resolution image."
+    default: false
+  date:
+    type: string
+    description: "The date [YYYY-MM-DD] of the APOD image to retrieve."
