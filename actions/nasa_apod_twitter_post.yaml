@@ -6,6 +6,6 @@ runner_type: "mistral-v2"
 enabled: true
 entry_point: workflows/nasa_apod_twitter_post.yaml
 parameters:
-  extra_message:
+  status:
     type: string
     default: ''

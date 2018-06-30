@@ -3,7 +3,7 @@ version: '2.0'
 tutorial.nasa_apod_twitter_post:
   type: direct
   input:
-    - extra_message
+    - status
 
   tasks:
     get_apod_url:
@@ -16,4 +16,5 @@ tutorial.nasa_apod_twitter_post:
     post_to_twitter:
       action: twitter.update_status
       input:
-        status: "{{ _.extra_message }} {{ _.apod_url }}"
+        status: "{{ _.status }}"
+        media: "{{ _.apod_url }}"
