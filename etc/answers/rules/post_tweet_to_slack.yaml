@@ -1,0 +1,16 @@
+---
+name: "post_tweet_to_slack"
+description: "Post Tweet to a Slack channel."
+enabled: true
+
+trigger:
+  type: "twitter.stream_matched_tweet"
+  parameters: {}
+
+action:
+  ref: "tutorial.post_tweet_to_slack"
+  parameters:
+    message: "{{ trigger.text }}"
+    handle: "@{{ trigger.user.screen_name }}"
+    date: "{{ trigger.created_at }}"
+    url: "{{ trigger.url }}"

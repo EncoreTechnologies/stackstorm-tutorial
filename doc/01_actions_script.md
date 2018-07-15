@@ -38,6 +38,18 @@ parameters:
     type: string
 ```
 
+---
+**NOTE** 
+
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_script.yaml /opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml
+```
+---
+
+
 Notice the `runner_type: local-shell-script`. This tells StackStorm we're executing
 a local script. The `entry_point` parameter is the path (relative to the `actions/` directory)
 where the script is located. In our example we're using a Python script, but this

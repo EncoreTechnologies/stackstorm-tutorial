@@ -1,10 +1,10 @@
 ---
-name: nasa_apod_copy
+name: nasa_apod
 pack: tutorial
 description: "copy of etc/nasa_apod.py"
 runner_type: "local-shell-script"
 enabled: true
-entry_point: nasa_apod_copy.py
+entry_point: nasa_apod.py
 parameters:
   api_key:
     type: string
