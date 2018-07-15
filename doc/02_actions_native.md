@@ -14,13 +14,21 @@ Some of the benefits of using Python actions in StackStorm:
 * access to the pack config
 * access to the key/value datastore
 
+## Convert the action metadata
+
 First, we need to create an Action Metadata with `runner_type: python-script`. 
 This will tell StackStorm we're using a native Python action. It also defines our input
 parameters for the action (this will allow us to remove all of our `argparse` code within
 the script).
 
-Edit `/opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml` delete all of the 
-content in the file and replace it with the following:
+Delete all of the content in the file `/opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml` :
+
+```shell
+# hint: delete all of the content in the file
+echo "" > /opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml
+```
+
+Edit `/opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml` and add the following content:
 
 ``` yaml
 ---
@@ -43,6 +51,16 @@ parameters:
     type: string
     description: "The date [YYYY-MM-DD] of the APOD image to retrieve."
 ```
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_native.yaml /opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml
+```
+-----------
+
+## Convert the action python
 
 Next, we'll need to convert our Python code over to something compatible
 with StackStorm. For native Python actions the following rules need to be met:
@@ -94,7 +112,8 @@ class Apod(Action):
 ```
 
 Now we can copy the "meat" of our code over and we end up with a working
-StackStorm action:
+StackStorm action. The final code in `/opt/stackstorm/packs/tutorial/actions/nasa_apod.py` 
+should look like: 
 
 ``` python
 import json
@@ -119,6 +138,15 @@ class Apod(Action):
             data['url'] = data['hdurl']
         return data
 ```
+
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_native.py /opt/stackstorm/packs/tutorial/actions/nasa_apod.py
+```
+-----------
 
 Let's register with StackStorm
 
