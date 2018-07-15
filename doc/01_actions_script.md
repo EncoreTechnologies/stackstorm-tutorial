@@ -78,9 +78,7 @@ parameters:
 ```
 | NOTE |
 |-----------|
-| If you're struggling and just need the answer, simply copy the file from our |
-| answers directory: |
-| `cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_script.yaml /opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml` |
+| If you're struggling and just need the answer, simply copy the file from our answers directory: <br> `cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_script.yaml /opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml` |
 |----------|
 
 
