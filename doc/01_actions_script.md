@@ -26,6 +26,12 @@ ImportError: No module named requests
 To fix this we need to install the `requests` library:
 
 ```shell
+# if on Ubuntu
+sudo apt-get -y install python-pip
+# if on centos
+# sudo yum -y install python2-pip
+
+# install requests
 sudo pip install requests
 ```
 
@@ -118,13 +124,13 @@ result:
 We can change the date requested on the CLI by adding a parameter to the end of our command:
 
 ``` shell
-st2 run tutorial.nasa_apod_copy date=2018-06-22
+st2 run tutorial.nasa_apod date=2018-06-22
 ```
 
 We can also see the API calls made by the CLI by passing in the `--debug` flag:
 
 ``` shell
-st2 --debug run tutorial.nasa_apod_copy date=2018-06-22
+st2 --debug run tutorial.nasa_apod date=2018-06-22
 ```
 
 Notice all of the `cURL` outputs, this makes it very easy to learn the API and

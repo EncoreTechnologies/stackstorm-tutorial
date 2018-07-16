@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+#
+# Description:
+#   Queries NASA's APOD (Astronomy Picture Of the Day) API to get the link to the picture
+#   of the day.
+#
 import json
 import requests
 from st2common.runners.base_action import Action

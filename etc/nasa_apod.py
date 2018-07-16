@@ -32,9 +32,12 @@ def get_apod_metadata(args):
 
     response = requests.get(API_URL, params=params)
     response.raise_for_status()
-    return response.json()
+    data = response.json()
+    if hd:
+        data['url'] = data['hdurl']
+    return data
 
 if __name__ == "__main__":
     args = parse_args()
     metadata = get_apod_metadata(args)
-    print(metadata['hdurl'] if args.hd else metadata['url'])
+    print(metadata['url'])
