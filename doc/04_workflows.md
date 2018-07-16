@@ -1,6 +1,4 @@
-
-
-## Workflows
+# Workflows
 
 Workflows allow us to chain actions together, implement conditional logic and branching, and 
 turn actions into composable automations.
