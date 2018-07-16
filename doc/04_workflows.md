@@ -42,6 +42,13 @@ cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_twitter_post.yam
 ```
 -----------
 
+We need to tell StackStorm about our new action metadata file:
+
+```shell
+st2ctl reload --register-actions
+```
+
+
 ### Create the workflow
 
 StackStorm has several different Workflow engines including 
@@ -51,12 +58,13 @@ and the upcoming [Orchestra](https://github.com/StackStorm/orchestra).
 We're going to be using Mistral for this example.
 
 In our workflow we want to call `tutorial.nasa_apod` to retrieve our image URL.
-Next we'll post this as a message to twitter using `twitter.update_status`.
+Next we'll post this as a message to twitter, with picture attached,
+using the `twitter.update_status` action.
 
 **Note** The name of the workflow within the workflow file, **MUST** be the same
 as the name of the StackStorm `pack.action`:
 
-`/opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_twitter_post.yaml`
+Edit `/opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_twitter_post.yaml`
 
 Content:
 
@@ -84,7 +92,18 @@ tutorial.nasa_apod_twitter_post:
           - "{{ _.apod_url }}"
 ```
 
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/nasa_apod_twitter_post.yaml /opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_twitter_post.yaml
+```
+-----------
+
 ### Test
+
+Run our action, creating a new tweet!
 
 ``` shell
 st2 run tutorial.nasa_apod_twitter_post status="Check out this NASA pic:"
