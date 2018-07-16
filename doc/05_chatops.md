@@ -1,4 +1,3 @@
-
 # ChatOps Demo
 
 The ChatOps demo will connect a chat bot to Slack. Then we will configure a
@@ -180,6 +179,15 @@ result:
         Received the following output from our mission:
           {{ execution.result }}
 ```
+
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/aliases/nasa_apod_twitter_post.yaml /opt/stackstorm/packs/tutorial/aliases/nasa_apod_twitter_post.yaml
+```
+-----------
 
 To register this action alias we'll perform a reload command:
 

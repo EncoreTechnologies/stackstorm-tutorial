@@ -127,6 +127,15 @@ action:
     url: "{{ trigger.url }}"
 ```
 
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/rules/post_tweet_to_slack.yaml /opt/stackstorm/packs/tutorial/rules/post_tweet_to_slack.yaml
+```
+-----------
+
 Next we'll load the rule into the database so that it begins matching tweets.
 
 ``` shell
@@ -229,6 +238,15 @@ parameters:
     description: "URL to the tweet"
 ```
 
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/post_tweet_to_slack.yaml /opt/stackstorm/packs/tutorial/actions/post_tweet_to_slack.yaml
+```
+-----------
+
 Next we will create our workflow file 
 `/opt/stackstorm/packs/tutorial/actions/workflows/post_tweet_to_slack.yaml` 
 with the following content:
@@ -265,6 +283,15 @@ tutorial.post_tweet_to_slack:
         message: "{{ _.chat_message }}"
         channel: "#stackstorm"
 ```
+
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/post_tweet_to_slack.yaml /opt/stackstorm/packs/tutorial/actions/workflows/post_tweet_to_slack.yaml
+```
+-----------
 
 Next we'll tell StackStorm about our action, so that our rule can invoke it:
 

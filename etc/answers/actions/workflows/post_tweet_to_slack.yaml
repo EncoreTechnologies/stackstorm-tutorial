@@ -1,0 +1,30 @@
+version: '2.0'
+
+tutorial.post_tweet_to_slack:
+  type: direct
+  input:
+    - message
+    - handle
+    - date
+    - url
+    
+  tasks:
+    channel_branch:
+      action: std.noop
+      publish:
+        chat_message: "{{ _.handle }} tweeted on {{ _.date }}: {{ _.message }} - {{ _.url }}"
+      on-complete:
+        - post_to_pyohio: "{{ '#PyOhio' in _.message }}"
+        - post_to_stackstorm: "{{ '@Stack_Storm' in _.message }}"
+        
+    post_to_pyohio:
+      action: chatops.post_message
+      input:
+        message: "{{ _.chat_message }}"
+        channel: "#pyohio"
+        
+    post_to_stackstorm:
+      action: chatops.post_message
+      input:
+        message: "{{ _.chat_message }}"
+        channel: "#stackstorm"

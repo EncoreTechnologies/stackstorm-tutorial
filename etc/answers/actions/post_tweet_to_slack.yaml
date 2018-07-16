@@ -1,0 +1,20 @@
+---
+name: post_tweet_to_slack
+pack: tutorial
+description: "Post a tweet to Slack"
+runner_type: "mistral-v2"
+enabled: true
+entry_point: workflows/post_tweet_to_slack.yaml
+parameters:
+  message:
+    type: string
+    description: "Tweet message body."
+  handle:
+    type: string
+    description: "Twitter handle of the user who tweeted"
+  date:
+    type: string
+    description: "The date+time the tweet was created"
+  url:
+    type: string
+    description: "URL to the tweet"

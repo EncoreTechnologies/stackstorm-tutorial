@@ -14,6 +14,9 @@ Some of the benefits of using Python actions in StackStorm:
 * access to the pack config
 * access to the key/value datastore
 
+In this demo we're going to convert the action we just created into a
+StackStorm native python action that receives the benefits above.
+
 ## Convert the action metadata
 
 First, we need to create an Action Metadata with `runner_type: python-script`. 
