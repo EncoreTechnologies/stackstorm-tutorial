@@ -8,4 +8,5 @@ entry_point: workflows/nasa_apod_twitter_post.yaml
 parameters:
   status:
     type: string
-    default: ''
+    default: ""
+    description: "Status message for your tweet"
