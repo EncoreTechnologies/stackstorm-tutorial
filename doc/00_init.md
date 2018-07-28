@@ -16,11 +16,16 @@ SSH into your StackStorm host:
 
 ```shell
 # the hostname should be on the card at your station
-ssh ubuntu@ec2-x-x-x-x.us-east-y.compute.amazonaws.com
+ssh stackstorm@1.2.x.x
 ```
 
-If you're following along at home and logging into a CentOS host instead of
-an Ubuntu host you'll want to ssh in as root:
+If you're following along at home and logging into a CentOS host, login as `root`.
+
+```shell
+ssh root@stackstorm.doain.tld
+```
+
+If you're on Ubuntu, login as `ubuntu`:
 
 ```shell
 ssh root@stackstorm.doain.tld

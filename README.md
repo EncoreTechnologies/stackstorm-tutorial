@@ -4,6 +4,10 @@ This pack provides resources for a high-level tutorial on several key features
 in [StackStrom](https://stackstorm.com/). For in-depth details, please visit
 the excellent [StackStorm documentation](https://docs.stackstorm.com/) page.
 
+## Prep Instructions
+
+Please visit the following and complete the [prep instructions](https://gist.github.com/nmaludy/21c403d98eaf13f2accfd85e68dadb9c)
+
 ## Tutorial
 
 0. [Initialization](doc/00_init.md)
