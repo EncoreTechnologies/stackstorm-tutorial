@@ -26,10 +26,8 @@ ImportError: No module named requests
 To fix this we need to install the `requests` library:
 
 ```shell
-# if on Ubuntu
-sudo apt-get -y install python-pip
-# if on centos
-# sudo yum -y install python2-pip
+# install pip
+sudo yum -y install python2-pip
 
 # install requests
 sudo pip install requests
