@@ -206,14 +206,10 @@ sudo systemctl restart st2chatops
 
 ### Testing the Action Alias
 
-To invoke the action alias we will simply type the following string in chat:
+To invoke the action alias we will simply type the following string in chat as a Direct Message to the bot:
 
 ``` shell
-# in a Private Message / Direct Message (DM)
 nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps!!!
-
-# if the bot is in a channel, need to make it !nasa
-!nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps!!!
 ```
 
 You should see a set of responses in the channel:

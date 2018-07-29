@@ -68,7 +68,7 @@ sudo systemctl restart st2sensorcontainer
 Publish a new message to RabbitMQ
 
 ```shell
-st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="test sensor"
+st2 run tutorial.nasa_apod_rabbitmq_publish date="2018-07-04" message="hey sensor"
 ```
 
 Check StackStorm to ensure a new trigger instance was created.
@@ -156,7 +156,7 @@ st2ctl reload --register-rules
 Publish a RabbitMQ message with either `#pyohio` or `#stackstorm` in the body
 
 ```shell
-st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="#pyohio"
+st2 run tutorial.nasa_apod_rabbitmq_publish date="2018-07-04" message="sensor to #pyohio"
 ```
 
 Check StackStorm to ensure that a trigger was created:
@@ -315,7 +315,7 @@ In Slack, create two new channels and invite your bot!
 Post another message with either `#pyohio` or `#stackstorm` in the message
 
 ```shell
-st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="#pyohio"
+st2 run tutorial.nasa_apod_rabbitmq_publish date="2018-07-04" message="sensor to #pyohio"
 ```
 
 Check to ensure our action executed:
@@ -362,7 +362,7 @@ result:
   channel: '#pyohio'
   extra: null
   message: 'Received a message on RabbitMQ queue demoqueue
- #pyohio'
+ https://apod.nasa.gov/apod/image/1807/5D4_4276_crs15launch1024.jpg sensor to #pyohio'
   user: null
   whisper: false
 start_timestamp: Sun, 29 Jul 2018 14:43:19 UTC
