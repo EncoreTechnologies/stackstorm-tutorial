@@ -318,7 +318,6 @@ Post another message with either `#pyohio` or `#stackstorm` in the message
 st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="#pyohio"
 ```
 
-
 Check to ensure our action executed:
 
 ``` shell
@@ -326,58 +325,53 @@ $ st2 rule-enforcement list --rule tutorial.post_rabbitmq_to_slack
 +--------------------------+--------------------+---------------------+--------------+--------------------+
 | id                       | rule.ref           | trigger_instance_id | execution_id | enforced_at        |
 +--------------------------+--------------------+---------------------+--------------+--------------------+
-| 5b5dd1f6587be00afa979140 | tutorial.post_rabb | 5b5dd1f6587be00afa9 |              | 2018-07-29T14:40:5 |
-|                          | itmq_to_slack      | 7913e               |              | 4.057161Z          |
+| 5b5dd288587be00afa97914c | tutorial.post_rabb | 5b5dd287587be00afa9 | 5b5dd288587be00afa | 2018-07-29T14:43:1 |
+|                          | itmq_to_slack      | 79147               | 97914a             | 9.870669Z          |
 +--------------------------+--------------------+---------------------+--------------+--------------------+
 ```
 
 Check the rule-enforcement
 
 ``` shell
-$ st2 rule-enforcement get 5b4a363ba814c06e6e12e791
-+---------------------+------------------------------+
-| Property            | Value                        |
-+---------------------+------------------------------+
-| id                  | 5b4a363ba814c06e6e12e791     |
-| rule.ref            | tutorial.post_tweet_to_slack |
-| trigger_instance_id | 5b4a363ba814c06e6e12e78d     |
-| execution_id        | 5b4a363ba814c06e6e12e790     |
-| failure_reason      |                              |
-| enforced_at         | 2018-07-14T17:43:23.401819Z  |
-+---------------------+------------------------------+
+$ st2 rule-enforcement get 5b5dd288587be00afa97914c
++---------------------+---------------------------------+
+| Property            | Value                           |
++---------------------+---------------------------------+
+| id                  | 5b5dd288587be00afa97914c        |
+| rule.ref            | tutorial.post_rabbitmq_to_slack |
+| trigger_instance_id | 5b5dd287587be00afa979147        |
+| execution_id        | 5b5dd288587be00afa97914a        |
+| failure_reason      |                                 |
+| enforced_at         | 2018-07-29T14:43:19.870669Z     |
++---------------------+---------------------------------+
+
 ```
 
-Check the action execution (by ID or by type):
+Check the action execution by ID contained in the rule enforcement:
 
 ``` shell
-# By ID
-$ st2 execution get 5b4a363ba814c06e6e12e790
-id: 5b4a363ba814c06e6e12e790
-action.ref: tutorial.post_tweet_to_slack
-parameters:
-  date: Sat Jul 14 17:43:22 +0000 2018
-  handle: '@NickMaludyDemo'
-  message: 'Testing my action and workflow #NickTest #PyOhio'
-  url: https://twitter.com/NickMaludyDemo/status/1018189225097940998
-status: succeeded (2s elapsed)
-start_timestamp: Sat, 14 Jul 2018 17:43:23 UTC
-end_timestamp: Sat, 14 Jul 2018 17:43:25 UTC
+$ st2 execution get 5b5dd288587be00afa97914a
+id: 5b5dd288587be00afa97914a
+action.ref: tutorial.post_rabbitmq_to_slack
+parameters: 
+  body: '#pyohio'
+  queue: demoqueue
+status: succeeded (3s elapsed)
+result_task: post_to_pyohio
+result: 
+  channel: '#pyohio'
+  extra: null
+  message: 'Received a message on RabbitMQ queue demoqueue
+ #pyohio'
+  user: null
+  whisper: false
+start_timestamp: Sun, 29 Jul 2018 14:43:19 UTC
+end_timestamp: Sun, 29 Jul 2018 14:43:22 UTC
 +--------------------------+------------------------+----------------+--------------------+-----------------+
 | id                       | status                 | task           | action             | start_timestamp |
 +--------------------------+------------------------+----------------+--------------------+-----------------+
-| 5b4a363ca814c06e6b76f763 | succeeded (0s elapsed) | post_to_pyohio | chatops.post_messa | Sat, 14 Jul     |
-|                          |                        |                | ge                 | 2018 17:43:24   |
+| 5b5dd288587be00e2675d6ac | succeeded (1s elapsed) | post_to_pyohio | chatops.post_messa | Sun, 29 Jul     |
+|                          |                        |                | ge                 | 2018 14:43:20   |
 |                          |                        |                |                    | UTC             |
 +--------------------------+------------------------+----------------+--------------------+-----------------+
-
-
-# by Type
-$ st2 execution list --action tutorial.post_tweet_to_slack
-+----------------------------+-----------------+--------------+------------------------+-----------------+---------------+
-| id                         | action.ref      | context.user | status                 | start_timestamp | end_timestamp |
-+----------------------------+-----------------+--------------+------------------------+-----------------+---------------+
-| + 5b4a363ba814c06e6e12e790 | tutorial.post_t | stanley      | succeeded (2s elapsed) | Sat, 14 Jul     | Sat, 14 Jul   |
-|                            | weet_to_slack   |              |                        | 2018 17:43:23   | 2018 17:43:25 |
-|                            |                 |              |                        | UTC             | UTC           |
-+----------------------------+-----------------+--------------+------------------------+-----------------+---------------+
 ```
