@@ -219,7 +219,7 @@ To invoke the action alias we will simply type the following string in chat:
 nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps!!!
 
 # if the bot is in a channel, need to make it !nasa
-!nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps <your name here>!!!
+!nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps!!!
 ```
 
 You should see a set of responses in the channel:

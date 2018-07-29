@@ -113,7 +113,7 @@ tutorial.nasa_apod_rabbitmq_publish:
         exchange: "{{ _.exchange }}"
         exchange_type: "{{ _.exchange_type }}"
         routing_key: "{{ _.routing_key }}"
-        message: "{{ _.apod_url }}{%if _.message $} {{ _.message }}{% endif %}"
+        message: "{{ _.apod_url }}{%if _.message %} {{ _.message }}{% endif %}"
 ```
 
 -----------
