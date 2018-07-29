@@ -91,7 +91,10 @@ tutorial.nasa_apod_rabbitmq_publish:
   type: direct
   input:
     - date
-    - status
+    - host
+    - exchange
+    - exchange_type
+    - routing_key
 
   tasks:
     get_apod_url:
