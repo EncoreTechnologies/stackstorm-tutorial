@@ -194,11 +194,5 @@ st2ctl reload --register-actions
 And test!
 
 ``` shell
-st2 run tutorial.nasa_apod
-```
-
-Now try with some parameters:
-
-``` shell
-st2 run tutorial.nasa_apod date=2018-06-22
+st2 run tutorial.nasa_apod date=2018-07-04
 ```

@@ -10,10 +10,14 @@ picture.
 Let's ensure this script works by running it:
 
 ```shell 
-/opt/stackstorm/packs/tutorial/etc/nasa_apod.py
+/opt/stackstorm/packs/tutorial/etc/nasa_apod.py --help
+/opt/stackstorm/packs/tutorial/etc/nasa_apod.py --date "2018-07-04"
 ```
 
-It should have failed with the following error:
+It worked, outputting the URL of the NASA Astronomy Picture Of the Day for July 4th 2018.
+
+
+**note** If you're running this on an ubuntu box you probably received this error:
 
 ```shell
 $ /opt/stackstorm/packs/tutorial/etc/nasa_apod.py
@@ -27,21 +31,11 @@ To fix this we need to install the `requests` library:
 
 ```shell
 # install pip
-sudo yum -y install python2-pip
+sudo apt-get -y install python2-pip
 
 # install requests
 sudo pip install requests
 ```
-
-Let's test our action again and ensure that it runs:
-
-```shell
-$ /opt/stackstorm/packs/tutorial/etc/nasa_apod.py
-https://apod.nasa.gov/apod/image/1807/M57Ring_HubbleGendler_960.jpg
-```
-
-This time it worked, outputting the URL of the current NASA Astronomy Picture Of the Day.
-
 
 ## Convert our script
 
@@ -106,29 +100,24 @@ st2ctl reload --register-actions
 Let's test our action:
 
 ``` shell
-$ st2 run tutorial.nasa_apod
+$ st2 run tutorial.nasa_apod date=2018-07-04
 .
-id: 5b4bc3d52d30dd33a2e39d2b
+id: 5b5da49c587be00e2675d5f5
 status: succeeded
-parameters: None
+parameters: 
+  date: '2018-07-04'
 result: 
   failed: false
   return_code: 0
   stderr: ''
-  stdout: https://apod.nasa.gov/apod/image/1807/M57Ring_HubbleGendler_960.jpg
+  stdout: https://apod.nasa.gov/apod/image/1807/5D4_4276_crs15launch1024.jpg
   succeeded: true
-```
-
-We can change the date requested on the CLI by adding a parameter to the end of our command:
-
-``` shell
-st2 run tutorial.nasa_apod date=2018-06-22
 ```
 
 We can also see the API calls made by the CLI by passing in the `--debug` flag:
 
 ``` shell
-st2 --debug run tutorial.nasa_apod date=2018-06-22
+st2 --debug run tutorial.nasa_apod date=2018-07-04
 ```
 
 Notice all of the `cURL` outputs, this makes it very easy to learn the API and

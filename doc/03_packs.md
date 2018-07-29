@@ -76,18 +76,28 @@ Content:
 
 ``` yaml
 ---
-consumer_key: "qwerty"
-consumer_secret: "asdfg"
+consumer_key: "9JsHlvxpkGMuWnMd1fgbJfS4W"
+consumer_secret: "sH5QHYu9Wjng3KzdB2nH5dGNSte3UdP2MU3sliaLlF4i9n9wyw"
 
-access_token: "abc-123"
-access_token_secret: "456def"
+access_token: "1010576900513849344-1nQd5oZXz6zivJXHFFzsy5loBSWfmq"
+access_token_secret: "41viAMyPZpYTRk38AWhNgAzqAK2V8FwrIwrbbFyhGAosk"
 
 query:
-  - "StackStorm"
+  - "#PyOhio"
   - "@Stack_Storm"
 count: 30
 language: en
 ```
+
+-----------
+**NOTE** 
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+sudo cp /opt/stackstorm/packs/tutorial/etc/answers/configs/twitter.yaml /opt/stackstorm/configs/twitter.yaml
+```
+-----------
+
 
 Now, we'll tell StackStorm to load this configuration into its database:
 
@@ -98,5 +108,9 @@ st2ctl reload --register-configs
 ### Test out the Twitter pack
 
 ```shell
-st2 run twitter.update_status status="Test from StackStorm CLI"
+st2 run twitter.update_status status="Test from StackStorm CLI <your name here>"
 ```
+
+Check out my demo twitter page to see if your tweet is present:
+
+https://twitter.com/NickMaludyDemo
