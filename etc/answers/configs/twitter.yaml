@@ -1,0 +1,12 @@
+---
+consumer_key: "9JsHlvxpkGMuWnMd1fgbJfS4W"
+consumer_secret: "sH5QHYu9Wjng3KzdB2nH5dGNSte3UdP2MU3sliaLlF4i9n9wyw"
+
+access_token: "1010576900513849344-1nQd5oZXz6zivJXHFFzsy5loBSWfmq"
+access_token_secret: "41viAMyPZpYTRk38AWhNgAzqAK2V8FwrIwrbbFyhGAosk"
+
+query:
+  - "#PyOhio"
+  - "@Stack_Storm"
+count: 30
+language: en
