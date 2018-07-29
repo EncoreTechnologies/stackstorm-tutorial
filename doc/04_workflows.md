@@ -27,6 +27,9 @@ runner_type: "mistral-v2"
 enabled: true
 entry_point: workflows/nasa_apod_twitter_post.yaml
 parameters:
+  date:
+    type: string
+    description: "The date [YYYY-MM-DD] of the APOD image to retrieve."
   status:
     type: string
     default: ""
@@ -74,11 +77,14 @@ version: '2.0'
 tutorial.nasa_apod_twitter_post:
   type: direct
   input:
+    - date
     - status
 
   tasks:
     get_apod_url:
       action: tutorial.nasa_apod
+      input:
+        date: "{{ _.date }}"
       publish:
         apod_url: "{{ task('get_apod_url').result.result.url }}"
       on-success:
@@ -106,6 +112,6 @@ cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/nasa_apod_twitte
 Run our action, creating a new tweet!
 
 ``` shell
-st2 run tutorial.nasa_apod_twitter_post status="Check out this NASA pic:"
+st2 run tutorial.nasa_apod_twitter_post date="2018-07-04" status="Check out this NASA pic:"
 ```
 

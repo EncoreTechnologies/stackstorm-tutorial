@@ -3,11 +3,14 @@ version: '2.0'
 tutorial.nasa_apod_twitter_post:
   type: direct
   input:
+    - date
     - status
 
   tasks:
     get_apod_url:
       action: tutorial.nasa_apod
+      input:
+        date: "{{ _.date }}"
       publish:
         apod_url: "{{ task('get_apod_url').result.result.url }}"
       on-success:

@@ -6,6 +6,9 @@ runner_type: "mistral-v2"
 enabled: true
 entry_point: workflows/nasa_apod_twitter_post.yaml
 parameters:
+  date:
+    type: string
+    description: "The date [YYYY-MM-DD] of the APOD image to retrieve."
   status:
     type: string
     default: ""
