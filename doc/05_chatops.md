@@ -43,39 +43,14 @@ up, press the `Save Integration` button (3).
 We will now take the `Slack API Token` for the Slack bot and configure StackStorm
 ChatOps to connect using this information.
 
-First, let's create a `StackStorm API key` that the ChatOps bot will use to communicate
-with the StackStorm API:
-
-``` shell
-$ st2 apikey create -k -m '{"used_by": "st2chatops"}'
-+------------+--------------------------------------------------------------+
-| Property   | Value                                                        |
-+------------+--------------------------------------------------------------+
-| id         | 5b4b53e4a814c01b1516050b                                     |
-| created_at | 2018-07-15T14:02:12.946531Z                                  |
-| enabled    | True                                                         |
-| key        | NGExZTJjY2Y5ZWI0MWM3NWFlZGE4YzJiZjcxYWQ0ZjA1YjU2M2E2OGMyMWJi |
-|            | YTA5N2Y2NDI0MGM4NWEzYTIzZg                                   |
-| metadata   | {                                                            |
-|            |     "used_by": "st2chatops"                                  |
-|            | }                                                            |
-| uid        | api_key:fff87d5b4a3ebc2032814077fe3d95575c971ea0dbd0d599228a |
-|            | 4f31a07d726216eac040926d715173ec2317acfef04aca8fe644b0ae07d4 |
-|            | b324b3ddf9987ac1                                             |
-| user       | st2admin                                                     |
-+------------+--------------------------------------------------------------+
-```
-
-The `key` parameter in the output is our `StackStorm API key` that we will use 
-for ChatOps.
-
 The StackStorm ChatOps config file is `/opt/stackstorm/chatops/st2chatops.env`.
 
 Edit this file and set the following fields:
 
 1. `HUBOT_NAME` = `Full Name` of your bot in Slack
-2. `ST2_API_KEY` = Value of your `StackStorm API Key`
+2. `HUBOT_ADAPER` = Uncomment this field
 3. `HUBOT_SLACK_TOKEN` = Value of your `Slack API Token`
+4. `HUBOT_SLACK_EXIT_ON_DISCONNECT` = Uncomment this field
 
 
 ```shell
@@ -100,27 +75,10 @@ export EXPRESS_PORT=8081
 export HUBOT_LOG_LEVEL=debug
 
 # Bot name
-export HUBOT_NAME="StackStorm"
+export HUBOT_NAME=StackStorm
 export HUBOT_ALIAS='!'
 
-######################################################################
-# StackStorm settings
-
-# StackStorm API endpoint.
-export ST2_API="${ST2_API:-https://${ST2_HOSTNAME}/api}"
-
-# StackStorm auth endpoint.
-# export ST2_AUTH_URL="${ST2_AUTH_URL:-https://${ST2_HOSTNAME}/auth}"
-
-# StackStorm API key
-export ST2_API_KEY=NGExZTJjY2Y5ZWI0MWM3NWFlZGE4YzJiZjcxYWQ0ZjA1YjU2M2E2OGMyMWJiYTA5N2Y2NDI0MGM4NWEzYTIzZg
-
-# ST2 credentials. Fill in to use any stackstorm account.
-# export ST2_AUTH_USERNAME="${ST2_AUTH_USERNAME:-st2admin}"
-# export ST2_AUTH_PASSWORD="${ST2_AUTH_PASSWORD:-testp}"
-
-# Public URL of StackStorm instance: used it to offer links to execution details in a chat.
-export ST2_WEBUI_URL=https://${ST2_HOSTNAME}
+....
 
 ######################################################################
 # Chat service adapter settings
@@ -137,6 +95,42 @@ export HUBOT_SLACK_TOKEN=xoxb-133155492256-xxx-yyyy
 # Uncomment the following line to force hubot to exit if disconnected from slack.
 export HUBOT_SLACK_EXIT_ON_DISCONNECT=1
 ```
+
+## Create ChatOps API key
+
+Next we need to create a `StackStorm API key` that the ChatOps bot will use to communicate
+with the StackStorm API:
+
+``` shell
+st2 apikey create -k -m '{"used_by": "st2chatops"}'
+```
+
+Copy this key into the `st2chatops.env` file and assign it to the value of:
+
+
+```shell
+sudo vi /opt/stackstorm/chatops/st2chatops.env
+```
+
+Contents of the file:
+
+```shell
+######################################################################
+# StackStorm settings
+
+# StackStorm API endpoint.
+export ST2_API="${ST2_API:-https://${ST2_HOSTNAME}/api}"
+
+# StackStorm auth endpoint.
+# export ST2_AUTH_URL="${ST2_AUTH_URL:-https://${ST2_HOSTNAME}/auth}"
+
+# StackStorm stream endpoint.
+export ST2_STREAM_URL="${ST2_STREAM_URL:-https://${ST2_HOSTNAME}/stream}"
+
+# StackStorm API key
+export ST2_API_KEY=xyz123
+```
+
 
 Restart the StackStorm ChatOps service:
 
