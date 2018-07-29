@@ -6,7 +6,7 @@ turn actions into composable automations.
 Workflows are actions too! They simply use a different `runner_type: mistral-v2`.
 
 We'll demonstrate workflows by creating one that retrieves the NASA APOD picture URL
-then posts this to Twitter.
+then publish this URL to a RabbitMQ Queue.
 
 ### Create workflow action metadata
 
@@ -15,25 +15,40 @@ has `runner_type: mistral-v2`, input parameters just like the a Python action,
 and `entry_point` set to the path of workflow definition YAML file (relative to
 the pack's `actions/` directory)
 
-Edit `/opt/stackstorm/packs/tutorial/actions/nasa_apod_twitter_post.yaml` and insert
+Edit `/opt/stackstorm/packs/tutorial/actions/nasa_apod_rabbitmq_publish.yaml` and insert
 the following content:
 
 ``` yaml
 ---
-name: nasa_apod_twitter_post
+name: nasa_apod_rabbitmq_publish
 pack: tutorial
-description: "Queries NASA's APOD (Astronomy Picture Of the Day) API to get the link to the picture of the day, then posts that link to Twitter"
+description: "Queries NASA's APOD (Astronomy Picture Of the Day) API to get the link to the picture of the day, then publishes that link to a RabbitMQ queue"
 runner_type: "mistral-v2"
 enabled: true
-entry_point: workflows/nasa_apod_twitter_post.yaml
+entry_point: workflows/nasa_apod_rabbitmq_publish.yaml
 parameters:
   date:
     type: string
     description: "The date [YYYY-MM-DD] of the APOD image to retrieve."
-  status:
+  host:
     type: string
-    default: ""
-    description: "Status message for your tweet"
+    default: "127.0.0.1"
+  exchange:
+    type: string
+    default: "demo"
+    description: "Name of the RabbitMQ exchange"
+  exchange_type:
+    type: string
+    default: "topic"
+    description: "Type of the RabbitMQ exchange"
+  routing_key:
+    type: string
+    default: "demokey"
+    description: "Name of the RabbitMQ routing key"
+  queue:
+    type: string
+    default: "demoqueue"
+    description: "Name of the RabbitMQ queue to publish to"
 ```
 
 -----------
@@ -41,7 +56,7 @@ parameters:
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
-cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_twitter_post.yaml /opt/stackstorm/packs/tutorial/actions/nasa_apod_twitter_post.yaml
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/nasa_apod_rabbitmq_publish.yaml /opt/stackstorm/packs/tutorial/actions/nasa_apod_rabbitmq_publish.yaml
 ```
 -----------
 
@@ -50,7 +65,6 @@ We need to tell StackStorm about our new action metadata file:
 ```shell
 st2ctl reload --register-actions
 ```
-
 
 ### Create the workflow
 
@@ -61,20 +75,19 @@ and the upcoming [Orchestra](https://github.com/StackStorm/orchestra).
 We're going to be using Mistral for this example.
 
 In our workflow we want to call `tutorial.nasa_apod` to retrieve our image URL.
-Next we'll post this as a message to twitter, with picture attached,
-using the `twitter.update_status` action.
+Next we'll publish this as a message to RabbitMQ using the `twitter.update_status` action.
 
 **Note** The name of the workflow within the workflow file, **MUST** be the same
 as the name of the StackStorm `pack.action`:
 
-Edit `/opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_twitter_post.yaml`
+Edit `/opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_rabbitmq_publish.yaml`
 
 Content:
 
 ``` yaml
 version: '2.0'
 
-tutorial.nasa_apod_twitter_post:
+tutorial.nasa_apod_rabbitmq_publish:
   type: direct
   input:
     - date
@@ -88,14 +101,16 @@ tutorial.nasa_apod_twitter_post:
       publish:
         apod_url: "{{ task('get_apod_url').result.result.url }}"
       on-success:
-        - post_to_twitter
+        - publish_to_rabbitmq
 
-    post_to_twitter:
-      action: twitter.update_status
+    publish_to_rabbitmq:
+      action: rabbitmq.publish_message
       input:
-        status: "{{ _.status }}"
-        media:
-          - "{{ _.apod_url }}"
+        host: "{{ _.host }}"
+        exchange: "{{ _.exchange }}"
+        exchange_type: "{{ _.exchange_type }}"
+        routing_key: "{{ _.routing_key }}"
+        message: "{{ _.apod_url }}"
 ```
 
 -----------
@@ -103,15 +118,20 @@ tutorial.nasa_apod_twitter_post:
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
-cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/nasa_apod_twitter_post.yaml /opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_twitter_post.yaml
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/nasa_apod_rabbitmq_publish.yaml /opt/stackstorm/packs/tutorial/actions/workflows/nasa_apod_rabbitmq_publish.yaml
 ```
 -----------
 
 ### Test
 
-Run our action, creating a new tweet!
+Run our action, creating a new message!
 
 ``` shell
-st2 run tutorial.nasa_apod_twitter_post date="2018-07-04" status="Check out this NASA pic:"
+st2 run tutorial.nasa_apod_rabbitmq_publish date="2018-07-04"
 ```
 
+Read from the queue to see if our message was delivered:
+
+```shell
+rabbitmqadmin get queue=demoqueue
+```

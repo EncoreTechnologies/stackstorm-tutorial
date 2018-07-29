@@ -24,93 +24,40 @@ by name:
 st2 pack install xxx
 ```
 
-In this demo we're going to install the `twitter` pack and configure it so
-we can post a tweet from StackStorm.
+In this demo we're going to install the `rabbitmq` pack and configure it so
+we can post a message to a Queue from StackStorm.
 
-## Install twitter pack from exchange
+## Install RabbitMQ pack from exchange
 
-Frirst, install the `twitter` pack from the public
+First, install the `rabbitmq` pack from the public
 [StackStorm exchange](https://exchange.stackstorm.org).
 
 ``` shell
-st2 pack install twitter
+st2 pack install rabbitmq
 ```
 
-### Setup a Twitter app)
-
-Visit https://apps.twitter.com and create a new App:
+## Configure 
 
 ``` shell
-name = <yuour name here> StackStorm Tutorial
-description = StackStorm tutorial application
-website = https://stackstorm.org
+sudo rabbitmq-plugins enable rabbitmq_management
+sudo systemctl restart rabbitmq-server
+curl -O http://127.0.0.1:15672/cli/rabbitmqadmin
+sudo mv -f rabbitmqadmin /usr/bin/
+sudo chmod a+x /usr/bin/rabbitmqadmin
+
+rabbitmqadmin declare exchange name=demo type=topic durable=false
+rabbitmqadmin declare queue name=demoqueue
+rabbitmqadmin declare binding source=demo destination=demoqueue routing_key=demokey
 ```
 
-Agree and click submit!
-
-![twitter_01_create_app.png](/img/twitter_01_create_app.png)
-
-### Create an access Token
-
-* Within your new application click `Keys and Access Tokens`.
-* On the top of the page this will contain your `consumer_key` and `consumer_secret`
-* At the bottom of the page, generate a new `Access Token`, thisll will be your `access_token` and `access_token_secret`
-
-![twitter_02_create_access_token.png](/img/twitter_02_create_access_token.png)
-
-![twitter_03_obtain_access_token.png](/img/twitter_03_obtain_access_token.png)
-
-### Create the Twitter config in StackStorm
-
-``` shell
-sudo cp /opt/stackstorm/packs/twitter/twitter.yaml.example /opt/stackstorm/configs/twitter.yaml
-```
-
-Edit `/opt/stackstorm/configs/twitter.yaml` and fill in the value from the `Keys and Access Tokens` page. Example (you'll need to edit this with `sudo`:
+### Test out the RabbitMQ pack
 
 ```shell
-sudo vi /opt/stackstorm/configs/twitter.yaml
+st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="test"
 ```
 
-Content: 
-
-``` yaml
----
-consumer_key: "9JsHlvxpkGMuWnMd1fgbJfS4W"
-consumer_secret: "sH5QHYu9Wjng3KzdB2nH5dGNSte3UdP2MU3sliaLlF4i9n9wyw"
-
-access_token: "1010576900513849344-1nQd5oZXz6zivJXHFFzsy5loBSWfmq"
-access_token_secret: "41viAMyPZpYTRk38AWhNgAzqAK2V8FwrIwrbbFyhGAosk"
-
-query:
-  - "#PyOhio"
-  - "@Stack_Storm"
-count: 30
-language: en
-```
-
------------
-**NOTE** 
-If you're struggling and just need the answer, simply copy the file from our
-answers directory:
-```shell
-sudo cp /opt/stackstorm/packs/tutorial/etc/answers/configs/twitter.yaml /opt/stackstorm/configs/twitter.yaml
-```
------------
-
-
-Now, we'll tell StackStorm to load this configuration into its database:
-
-``` shell
-st2ctl reload --register-configs
-```
-
-### Test out the Twitter pack
+Read from the queue to see if our message was delivered:
 
 ```shell
-st2 run twitter.update_status status="Test from StackStorm CLI <your name here>"
+rabbitmqadmin get queue=demoqueue
 ```
-
-Check out my demo twitter page to see if your tweet is present:
-
-https://twitter.com/NickMaludyDemo

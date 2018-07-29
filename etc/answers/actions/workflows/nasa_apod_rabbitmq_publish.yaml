@@ -1,0 +1,26 @@
+version: '2.0'
+
+tutorial.nasa_apod_rabbitmq_publish:
+  type: direct
+  input:
+    - date
+    - status
+
+  tasks:
+    get_apod_url:
+      action: tutorial.nasa_apod
+      input:
+        date: "{{ _.date }}"
+      publish:
+        apod_url: "{{ task('get_apod_url').result.result.url }}"
+      on-success:
+        - publish_to_rabbitmq
+
+    publish_to_rabbitmq:
+      action: rabbitmq.publish_message
+      input:
+        host: "{{ _.host }}"
+        exchange: "{{ _.exchange }}"
+        exchange_type: "{{ _.exchange_type }}"
+        routing_key: "{{ _.routing_key }}"
+        message: "{{ _.apod_url }}"
