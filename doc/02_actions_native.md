@@ -90,59 +90,6 @@ class HelloWorld(Action):
         return "hello world"
 ```
 
-For our APOD example we can convert our code by wrapping it in an object and
-removing the code in the `if __name__ == "__main__" block (no longer needed):
-
-``` python
-#!/usr/bin/env python
-#
-# Description:
-#   Queries NASA's APOD (Astronomy Picture Of the Day) API to get the link to the picture
-#   of the day.
-#
-import argparse
-import json
-import requests
-from st2common.runners.base_action import Action
-
-
-API_URL = "https://api.nasa.gov/planetary/apod"
-DEMO_API_KEY = "DEMO_KEY"
-
-class Apod(Action):
-
-    def parse_args(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('-d', '--date',
-                            help='The date [YYYY-MM-DD] of the APOD image to retrieve.')
-        parser.add_argument('--hd',
-                            help='Retrieve the high resolution image.',
-                            action='store_true')
-        parser.add_argument('-a', '--api-key',
-                            help='API key to use for api.nasa.gov.',
-                            default=DEMO_API_KEY)
-        return parser.parse_args()
-    
-    def get_apod_metadata(self, args):
-        params = {'api_key': args.api_key,
-                  'hd': args.hd}
-        if args.date is not None:
-            params['date'] = args.date
-    
-        response = requests.get(API_URL, params=params)
-        response.raise_for_status()
-        data = response.json()
-        if hd:
-            data['url'] = data['hdurl']
-        return data
-```
-
-We still have a bunch of `argparse` code to pull information from the CLI.
-Thanks to StackStorm, we no longer need this code and it can be thrown away.
-Instead we'll simply rename our `get_apod_metadata()` function to `run()` 
-with the parameters that match the names in the Action Metadata file:
-`def run(self, api_key, date, hd):`
-
 The final code in `/opt/stackstorm/packs/tutorial/actions/nasa_apod.py` 
 should look like: 
 
