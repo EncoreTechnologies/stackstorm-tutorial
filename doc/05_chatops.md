@@ -226,7 +226,8 @@ You should see a set of responses in the channel:
 
 ![action_alias_01_demo_response](img/action_alias_01_demo_response.png)
 
-As well as a new post on Twitter!
+Check the RabbitMQ queue to make sure that the message was received:
 
-![action_alias_02_twitter_post](img/action_alias_02_twitter_post.png)
-
+```shell
+rabbitmqadmin get queue=demoqueue count=99
+```

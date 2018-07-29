@@ -1,0 +1,10 @@
+---
+sensor_config:
+  host: "127.0.0.1"
+  username: "guest"
+  password: "guest"
+  rabbitmq_queue_sensor:
+    queues:
+      - "pyohioqueue"
+      - "rabbitmqqueue"
+    deserialization_method: "json"

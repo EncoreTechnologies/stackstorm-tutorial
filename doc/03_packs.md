@@ -59,5 +59,5 @@ st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topi
 Read from the queue to see if our message was delivered:
 
 ```shell
-rabbitmqadmin get queue=demoqueue
+rabbitmqadmin get queue=demoqueue count=99
 ```

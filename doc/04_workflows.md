@@ -136,5 +136,5 @@ st2 run tutorial.nasa_apod_rabbitmq_publish date="2018-07-04"
 Read from the queue to see if our message was delivered:
 
 ```shell
-rabbitmqadmin get queue=demoqueue count=10
+rabbitmqadmin get queue=demoqueue count=99
 ```

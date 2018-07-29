@@ -4,38 +4,50 @@ This demo will setup a pipeline that will listen for tweets that contain specifi
 words and then post those tweets into one of two Slack channels.
 In order to accomplish this we're going to use the following components:
 
-* Sensor - Will query the Twitter API for tweets that contain specific words
-* Trigger - Events that are emitted from the Sensor when a tweet contians the words
+* Sensor - Will query the RabbitMQ API for message on a specific queue
+* Trigger - Events that are emitted from the Sensor when a new message is received on the queue
 * Rule - Will match the triggers from the Sensor and invoke an action
 * Action - Metadata describing the workflow to execute in order to post to Slack
-* Workflow - Series of steps (actions) to determine which channel to post into. 
+* Workflow - Series of steps (actions) to determine which channel to post into.
              Then finally post the tweet into the Slack channel.
-             
+
 ## Configure the Sensor
 
-We're going to reuse an existing sensor from the `twitter` pack called `twitter.search_sensor`.
-This sensor uses information from the `twitter` pack configuration located in:
-`/opt/stackstorm/configs/twitter.yaml`. The config file contains a `query` parameter
-that is used by the `twitter.stream_sensor` as the words to search for in tweets.
+We're going to reuse an existing sensor from the `rabbitmq` pack called `rabbitmq.queues_sensor`.
+This sensor uses information from the `rabbitmq` pack configuration located in:
+`/opt/stackstorm/configs/rabbitmq.yaml`. The config file contains a `queues` parameter
+that tells `rabbitmq.queues_sensor` what queues to listen for messages on.
 
+Copy `/opt/stackstorm/packs/rabbitmq/rabbitmq.yaml.example` to `/opt/stackstorm/configs/rabbitmq.yaml`:
 
-Edit `/opt/stackstorm/configs/twitter.yaml` and enter `#PyOhio` and `#Stack_Storm` as items 
-in the `query` parameter:
+```yaml
+sudo cp /opt/stackstorm/packs/rabbitmq/rabbitmq.yaml.example /opt/stackstorm/configs/rabbitmq.yaml
+```
+
+Edit the file, changing `host` to `127.0.0.` and add the `demoqueue` to the `queues` parameter:
+
+**NOTE** You'll need to edit this file with `sudo /opt/stackstorm/configs/rabbitmq.yaml`
 
 ``` yaml
 ---
-consumer_key: "qwerty"
-consumer_secret: "asdfg"
-
-access_token: "abc-123"
-access_token_secret: "456def"
-
-query:
-  - "#PyOhio"
-  - "@Stack_Storm"
-count: 30
-language: en
+sensor_config:
+  host: "127.0.0.1"
+  username: "guest"
+  password: "guest"
+  rabbitmq_queue_sensor:
+    queues:
+      - "demoqueue"
+    deserialization_method: "json"
 ```
+
+-----------
+**NOTE**
+If you're struggling and just need the answer, simply copy the file from our
+answers directory:
+```shell
+sudo cp /opt/stackstorm/packs/tutorial/etc/answers/configs/rabbitmq.yaml /opt/stackstorm/configs/rabbitmq.yaml
+```
+-----------
 
 Next we'll reload the pack's configuration so that the database contains
 the new values:
@@ -128,7 +140,7 @@ action:
 ```
 
 -----------
-**NOTE** 
+**NOTE**
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
@@ -212,7 +224,7 @@ the tweet will be posted in the `#pyohio` Slack channel, if `@Stack_Storm`
 then the tweet will be posted in the `#stackstorm` channel.
 
 First we will create our action metadata file
-`/opt/stackstorm/packs/tutorial/actions/post_tweet_to_slack.yaml` with the 
+`/opt/stackstorm/packs/tutorial/actions/post_tweet_to_slack.yaml` with the
 following conent:
 
 ``` yaml
@@ -239,7 +251,7 @@ parameters:
 ```
 
 -----------
-**NOTE** 
+**NOTE**
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
@@ -247,8 +259,8 @@ cp /opt/stackstorm/packs/tutorial/etc/answers/actions/post_tweet_to_slack.yaml /
 ```
 -----------
 
-Next we will create our workflow file 
-`/opt/stackstorm/packs/tutorial/actions/workflows/post_tweet_to_slack.yaml` 
+Next we will create our workflow file
+`/opt/stackstorm/packs/tutorial/actions/workflows/post_tweet_to_slack.yaml`
 with the following content:
 
 ``` yaml
@@ -261,7 +273,7 @@ tutorial.post_tweet_to_slack:
     - handle
     - date
     - url
-    
+
   tasks:
     channel_branch:
       action: std.noop
@@ -270,13 +282,13 @@ tutorial.post_tweet_to_slack:
       on-complete:
         - post_to_pyohio: "{{ '#PyOhio' in _.message }}"
         - post_to_stackstorm: "{{ '@Stack_Storm' in _.message }}"
-        
+
     post_to_pyohio:
       action: chatops.post_message
       input:
         message: "{{ _.chat_message }}"
         channel: "#pyohio"
-        
+
     post_to_stackstorm:
       action: chatops.post_message
       input:
@@ -285,7 +297,7 @@ tutorial.post_tweet_to_slack:
 ```
 
 -----------
-**NOTE** 
+**NOTE**
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
@@ -348,7 +360,7 @@ Check the action execution (by ID or by type):
 $ st2 execution get 5b4a363ba814c06e6e12e790
 id: 5b4a363ba814c06e6e12e790
 action.ref: tutorial.post_tweet_to_slack
-parameters: 
+parameters:
   date: Sat Jul 14 17:43:22 +0000 2018
   handle: '@NickMaludyDemo'
   message: 'Testing my action and workflow #NickTest #PyOhio'
