@@ -33,7 +33,7 @@ def get_apod_metadata(args):
     response = requests.get(API_URL, params=params)
     response.raise_for_status()
     data = response.json()
-    if hd:
+    if args.hd:
         data['url'] = data['hdurl']
     return data
 
