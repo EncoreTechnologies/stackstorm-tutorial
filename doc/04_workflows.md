@@ -45,10 +45,6 @@ parameters:
     type: string
     default: "demokey"
     description: "Name of the RabbitMQ routing key"
-  queue:
-    type: string
-    default: "demoqueue"
-    description: "Name of the RabbitMQ queue to publish to"
 ```
 
 -----------
