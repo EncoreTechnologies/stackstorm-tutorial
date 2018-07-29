@@ -47,7 +47,7 @@ First, let's create a `StackStorm API key` that the ChatOps bot will use to comm
 with the StackStorm API:
 
 ``` shell
-$ st2 apikey create -m '{"used_by": "st2chatops"}'
+$ st2 apikey create -k -m '{"used_by": "st2chatops"}'
 +------------+--------------------------------------------------------------+
 | Property   | Value                                                        |
 +------------+--------------------------------------------------------------+
@@ -76,6 +76,13 @@ Edit this file and set the following fields:
 1. `HUBOT_NAME` = `Full Name` of your bot in Slack
 2. `ST2_API_KEY` = Value of your `StackStorm API Key`
 3. `HUBOT_SLACK_TOKEN` = Value of your `Slack API Token`
+
+
+```shell
+sudo vi /opt/stackstorm/chatops/st2chatops.env
+```
+
+Contents of the file:
 
 ``` shell
 export ST2_HOSTNAME="${ST2_HOSTNAME:-localhost}"
@@ -134,7 +141,7 @@ export HUBOT_SLACK_EXIT_ON_DISCONNECT=1
 Restart the StackStorm ChatOps service:
 
 ``` shell
-systemctl restart st2chatops
+sudo systemctl restart st2chatops
 ```
 
 ### Test ChatOps in Slack
@@ -173,7 +180,7 @@ pack: "tutorial"
 action_ref: "tutorial.nasa_apod_twitter_post"
 description: "Posts the NASA Astronomy Picture Of the Day to Twitter"
 formats:
-    - "nasa apod twitter post {{ status }}"
+    - "nasa apod twitter post date {{ date }} status {{ status }}"
 result:
     format: |
         Received the following output from our mission:

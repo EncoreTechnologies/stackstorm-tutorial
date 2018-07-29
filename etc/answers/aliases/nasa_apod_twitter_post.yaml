@@ -4,7 +4,7 @@ pack: "tutorial"
 action_ref: "tutorial.nasa_apod_twitter_post"
 description: "Posts the NASA Astronomy Picture Of the Day to Twitter"
 formats:
-    - "nasa apod twitter post {{ status }}"
+    - "nasa apod twitter post date {{ date }} status {{ status }}"
 result:
     format: |
         Received the following output from our mission:
