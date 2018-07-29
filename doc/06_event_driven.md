@@ -1,7 +1,8 @@
 # Event Driven Demo
 
-This demo will setup a pipeline that will listen for tweets that contain specific
-words and then post those tweets into one of two Slack channels.
+This demo will setup a pipeline that will listen for messages on specific RabbitMQ queues
+words and then post messages into one of two Slack channels depending on the body of
+the message.
 In order to accomplish this we're going to use the following components:
 
 * Sensor - Will query the RabbitMQ API for message on a specific queue
@@ -9,7 +10,7 @@ In order to accomplish this we're going to use the following components:
 * Rule - Will match the triggers from the Sensor and invoke an action
 * Action - Metadata describing the workflow to execute in order to post to Slack
 * Workflow - Series of steps (actions) to determine which channel to post into.
-             Then finally post the tweet into the Slack channel.
+             Then finally post the message into the Slack channel.
 
 ## Configure the Sensor
 
@@ -144,7 +145,7 @@ cp /opt/stackstorm/packs/tutorial/etc/answers/rules/post_rabbitmq_to_slack.yaml 
 ```
 -----------
 
-Next we'll load the rule into the database so that it begins matching tweets.
+Next we'll load the rule into the database so that it begins matching messages.
 
 ``` shell
 st2ctl reload --register-rules
@@ -152,98 +153,92 @@ st2ctl reload --register-rules
 
 ### Test the rule
 
-Post a new tweet with `#PyOhio` in the body.
+Publish a RabbitMQ message with either `#pyohio` or `#stackstorm` in the body
+
+```shell
+st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="#pyohio"
+```
 
 Check StackStorm to ensure that a trigger was created:
 
 ``` shell
-$ st2 trigger-instance list --trigger twitter.stream_matched_tweet
-+--------------------------+-------------------------+-------------------------+-----------+
-| id                       | trigger                 | occurrence_time         | status    |
-+--------------------------+-------------------------+-------------------------+-----------+
-| 5b4a1dd0a814c06e6e12dd6d | twitter.stream_matched_ | Sat, 14 Jul 2018        | processed |
-|                          | tweet                   | 15:59:12 UTC            |           |
-| 5b4a25b1a814c06e6e12e09a | twitter.stream_matched_ | Sat, 14 Jul 2018        | processed |
-|                          | tweet                   | 16:32:49 UTC            |           |
-+--------------------------+-------------------------+-------------------------+-----------+
+$ st2 trigger-instance list --trigger rabbitmq.new_message
++--------------------------+----------------+-----------------+-----------+
+| id                       | trigger        | occurrence_time | status    |
++--------------------------+----------------+-----------------+-----------+
+| 5b5dce8e587be00afa97911f | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:26:22   |           |
+|                          |                | UTC             |           |
+| 5b5dce8e587be00afa979120 | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:26:22   |           |
+|                          |                | UTC             |           |
+| 5b5dce8e587be00afa97912b | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:26:22   |           |
+|                          |                | UTC             |           |
+| 5b5dd083587be00afa97913a | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:34:43   |           |
+|                          |                | UTC             |           |
++--------------------------+----------------+-----------------+-----------+
 ```
 
 Check StackStorm to ensure that our rule matched our trigger (by type):
 
 ``` shell
-$ st2 rule-enforcement list --rule tutorial.post_tweet_to_slack
-+--------------------------+--------------------+---------------------+--------------+--------------------+
-| id                       | rule.ref           | trigger_instance_id | execution_id | enforced_at        |
-+--------------------------+--------------------+---------------------+--------------+--------------------+
-| 5b4a25b1a814c06e6e12e09c | tutorial.post_twee | 5b4a25b1a814c06e6e1 |              | 2018-07-14T16:32:4 |
-|                          | t_to_slack         | 2e09a               |              | 9.570092Z          |
-+--------------------------+--------------------+---------------------+--------------+--------------------+
-```
-
-Check StackStorm to ensure that our rule matched our trigger (by trigger-instance ID, this will return the same results as above):
-
-``` shell
-$ st2 rule-enforcement list --trigger-instance 5b4a25b1a814c06e6e12e09a
-+--------------------------+--------------------+---------------------+--------------+--------------------+
-| id                       | rule.ref           | trigger_instance_id | execution_id | enforced_at        |
-+--------------------------+--------------------+---------------------+--------------+--------------------+
-| 5b4a25b1a814c06e6e12e09c | tutorial.post_twee | 5b4a25b1a814c06e6e1 |              | 2018-07-14T16:32:4 |
-|                          | t_to_slack         | 2e09a               |              | 9.570092Z          |
-+--------------------------+--------------------+---------------------+--------------+--------------------+
-
+$ st2 rule-enforcement list --rule tutorial.post_rabbitmq_to_slack
++--------------------------+-------------------------------+--------------------------+--------------+-----------------------------+
+| id                       | rule.ref                      | trigger_instance_id      | execution_id | enforced_at                 |
++--------------------------+-------------------------------+--------------------------+--------------+-----------------------------+
+| 5b5dd083587be00afa97913c | tutorial.post_rabbitmq_to_sla | 5b5dd083587be00afa97913a |              | 2018-07-29T14:34:43.161928Z |
+|                          | ck                            |                          |              |                             |
++--------------------------+-------------------------------+--------------------------+--------------+-----------------------------+
 ```
 
 Get details about the rule enforcement:
 
 ``` shell
-$ st2 rule-enforcement get 5b4a25b1a814c06e6e12e09c
-+---------------------+-----------------------------------------------------+
-| Property            | Value                                               |
-+---------------------+-----------------------------------------------------+
-| id                  | 5b4a25b1a814c06e6e12e09c                            |
-| rule.ref            | tutorial.post_tweet_to_slack                        |
-| trigger_instance_id | 5b4a25b1a814c06e6e12e09a                            |
-| execution_id        |                                                     |
-| failure_reason      | Action "tutorial.post_tweet_to_slack" doesn't exist |
-| enforced_at         | 2018-07-14T16:32:49.570092Z                         |
-+---------------------+-----------------------------------------------------+
+$ st2 rule-enforcement get 5b5dd083587be00afa97913c
++---------------------+--------------------------------------------------------+
+| Property            | Value                                                  |
++---------------------+--------------------------------------------------------+
+| id                  | 5b5dd083587be00afa97913c                               |
+| rule.ref            | tutorial.post_rabbitmq_to_slack                        |
+| trigger_instance_id | 5b5dd083587be00afa97913a                               |
+| execution_id        |                                                        |
+| failure_reason      | Action "tutorial.post_rabbitmq_to_slack" doesn't exist |
+| enforced_at         | 2018-07-29T14:34:43.161928Z                            |
++---------------------+--------------------------------------------------------+
 ```
 
 This failed as expected since we haven't created the action yet (our next step).
 
-## Configure the Action and Workflow
 
-Our action will be a workflow that receives information about a tweet.
-The workflow will examine the tweet message and determine what channel
-to post the tweet in depending on the hashtags used. If `#PyOhio` then
-the tweet will be posted in the `#pyohio` Slack channel, if `@Stack_Storm`
-then the tweet will be posted in the `#stackstorm` channel.
+## Create the Action and Workflow
+
+Our action will be a workflow that receives a RabbitMQ message.
+The workflow will examine the body of the message and determine what channel
+to post the message in depending on the hashtags used. If `#pyohio` then
+the message will be posted in the `#pyohio` Slack channel, if `#stackstorm`
+then the message will be posted in the `#stackstorm` channel.
 
 First we will create our action metadata file
-`/opt/stackstorm/packs/tutorial/actions/post_tweet_to_slack.yaml` with the
+`/opt/stackstorm/packs/tutorial/actions/post_rabbitmq_to_slack.yaml` with the
 following conent:
 
 ``` yaml
 ---
-name: post_tweet_to_slack
+name: post_rabbitm_to_slack
 pack: tutorial
-description: "Post a tweet to Slack"
+description: "Post a RabbitMQ message to Slack"
 runner_type: "mistral-v2"
 enabled: true
-entry_point: workflows/post_tweet_to_slack.yaml
+entry_point: workflows/post_rabbitmq_to_slack.yaml
 parameters:
-  message:
+  queue:
     type: string
-    description: "Tweet message body."
-  handle:
+    description: "Queue the message was received on"
+  body:
     type: string
-    description: "Twitter handle of the user who tweeted"
-  date:
-    type: string
-    description: "The date+time the tweet was created"
-  url:
-    type: string
-    description: "URL to the tweet"
+    description: "Body of the message"
 ```
 
 -----------
@@ -251,40 +246,38 @@ parameters:
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
-cp /opt/stackstorm/packs/tutorial/etc/answers/actions/post_tweet_to_slack.yaml /opt/stackstorm/packs/tutorial/actions/post_tweet_to_slack.yaml
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/post_rabbitmq_to_slack.yaml /opt/stackstorm/packs/tutorial/actions/post_rabbitmq_to_slack.yaml
 ```
 -----------
 
 Next we will create our workflow file
-`/opt/stackstorm/packs/tutorial/actions/workflows/post_tweet_to_slack.yaml`
+`/opt/stackstorm/packs/tutorial/actions/workflows/post_rabbitmq_to_slack.yaml`
 with the following content:
 
 ``` yaml
 version: '2.0'
 
-tutorial.post_tweet_to_slack:
+tutorial.post_rabbitmq_to_slack:
   type: direct
   input:
-    - message
-    - handle
-    - date
-    - url
-
+    - queue
+    - body
+    
   tasks:
     channel_branch:
       action: std.noop
       publish:
-        chat_message: "{{ _.handle }} tweeted on {{ _.date }}: {{ _.message }} - {{ _.url }}"
+        chat_message: "Received a message on RabbitMQ queue {{ _.queue }}\n {{ _.body }}"
       on-complete:
-        - post_to_pyohio: "{{ '#PyOhio' in _.message }}"
-        - post_to_stackstorm: "{{ '@Stack_Storm' in _.message }}"
-
+        - post_to_pyohio: "{{ '#pyohio' in _.body }}"
+        - post_to_stackstorm: "{{ '#stackstorm' in _.body }}"
+        
     post_to_pyohio:
       action: chatops.post_message
       input:
         message: "{{ _.chat_message }}"
         channel: "#pyohio"
-
+        
     post_to_stackstorm:
       action: chatops.post_message
       input:
@@ -297,7 +290,7 @@ tutorial.post_tweet_to_slack:
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
-cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/post_tweet_to_slack.yaml /opt/stackstorm/packs/tutorial/actions/workflows/post_tweet_to_slack.yaml
+cp /opt/stackstorm/packs/tutorial/etc/answers/actions/workflows/post_rabbitmq_to_slack.yaml /opt/stackstorm/packs/tutorial/actions/workflows/post_rabbitmq_to_slack.yaml
 ```
 -----------
 
@@ -319,18 +312,23 @@ In Slack, create two new channels and invite your bot!
 
 ### Testing our Action and Workflow
 
-Post another tweet with either `#PyOhio` or `@Stack_Storm`
+Post another message with either `#pyohio` or `#stackstorm` in the message
+
+```shell
+st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="#pyohio"
+```
+
 
 Check to ensure our action executed:
 
 ``` shell
-$ st2 rule-enforcement list --rule tutorial.post_tweet_to_slack
-+--------------------------+--------------------+---------------------+--------------------+--------------------+
-| id                       | rule.ref           | trigger_instance_id | execution_id       | enforced_at        |
-+--------------------------+--------------------+---------------------+--------------------+--------------------+
-| 5b4a363ba814c06e6e12e791 | tutorial.post_twee | 5b4a363ba814c06e6e1 | 5b4a363ba814c06e6e | 2018-07-14T17:43:2 |
-|                          | t_to_slack         | 2e78d               | 12e790             | 3.401819Z          |
-+--------------------------+--------------------+---------------------+--------------------+--------------------+
+$ st2 rule-enforcement list --rule tutorial.post_rabbitmq_to_slack
++--------------------------+--------------------+---------------------+--------------+--------------------+
+| id                       | rule.ref           | trigger_instance_id | execution_id | enforced_at        |
++--------------------------+--------------------+---------------------+--------------+--------------------+
+| 5b5dd1f6587be00afa979140 | tutorial.post_rabb | 5b5dd1f6587be00afa9 |              | 2018-07-29T14:40:5 |
+|                          | itmq_to_slack      | 7913e               |              | 4.057161Z          |
++--------------------------+--------------------+---------------------+--------------+--------------------+
 ```
 
 Check the rule-enforcement

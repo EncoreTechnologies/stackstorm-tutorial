@@ -1,5 +1,5 @@
 ---
-name: post_rabbitm_to_slack
+name: post_rabbitmq_to_slack
 pack: tutorial
 description: "Post a RabbitMQ message to Slack"
 runner_type: "mistral-v2"
