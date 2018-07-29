@@ -2,7 +2,7 @@
 
 The ChatOps demo will connect a chat bot to Slack. Then we will configure a
 new ChatOps command, called an `action alias`, that will execute our action
-`tutorial.nasa_apod_twitter_post`.
+`tutorial.nasa_apod_rabbitmq_publish`.
 
 ## Create Slack bot
 
@@ -166,21 +166,21 @@ that will be forwarded on to the action when it is executed.
 Action aliases live in a pack's `aliases/` directory, so for our `tutorial`
 pack this would be `/opt/stackstorm/packs/tutorial/aliases`. 
 
-Let's create a new action alias that allows us to invoke our `tutorial.nasa_apod_twitter_post`
+Let's create a new action alias that allows us to invoke our `tutorial.nasa_apod_rabbitmq_publish`
 action from ChatOps. 
 
 To do this we will create a new metadata file 
-`/opt/stackstorm/packs/tutorial/aliases/nasa_apod_twitter_post.yaml` with the
+`/opt/stackstorm/packs/tutorial/aliases/nasa_apod_rabbitmq_publish.yaml` with the
 following content:
 
 ``` yaml
 ---
-name: "nasa_apod_twitter_post"
+name: "nasa_apod_rabbitmq_publish"
 pack: "tutorial"
-action_ref: "tutorial.nasa_apod_twitter_post"
-description: "Posts the NASA Astronomy Picture Of the Day to Twitter"
+action_ref: "tutorial.nasa_apod_rabbitmq_publish"
+description: "Publishes the NASA Astronomy Picture Of the Day to a RabbitMQ queue"
 formats:
-    - "nasa apod twitter post date {{ date }} status {{ status }}"
+    - "nasa apod rabbitmq publish date {{ date }} message {{ message }}"
 result:
     format: |
         Received the following output from our mission:
@@ -192,7 +192,7 @@ result:
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
-cp /opt/stackstorm/packs/tutorial/etc/answers/aliases/nasa_apod_twitter_post.yaml /opt/stackstorm/packs/tutorial/aliases/nasa_apod_twitter_post.yaml
+cp /opt/stackstorm/packs/tutorial/etc/answers/aliases/nasa_apod_rabbitmq_publish.yaml /opt/stackstorm/packs/tutorial/aliases/nasa_apod_rabbitmq_publish.yaml
 ```
 -----------
 
@@ -216,10 +216,10 @@ To invoke the action alias we will simply type the following string in chat:
 
 ``` shell
 # in a Private Message / Direct Message (DM)
-nasa apod twitter post date 2018-07-04 status Hello From ChatOps <your name here>!!!
+nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps!!!
 
 # if the bot is in a channel, need to make it !nasa
-!nasa apod twitter post date 2018-07-04 status Hello From ChatOps <your name here>!!!
+!nasa apod rabbitmq publish date 2018-07-04 message Hello From ChatOps <your name here>!!!
 ```
 
 You should see a set of responses in the channel:

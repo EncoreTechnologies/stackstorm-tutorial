@@ -1,0 +1,11 @@
+---
+name: "nasa_apod_rabbitmq_publish"
+pack: "tutorial"
+action_ref: "tutorial.nasa_apod_rabbitmq_publish"
+description: "Publishes the NASA Astronomy Picture Of the Day to a RabbitMQ queue"
+formats:
+    - "nasa apod rabbitmq publish date {{ date }} message {{ message }}"
+result:
+    format: |
+        Received the following output from our mission:
+          {{ execution.result }}

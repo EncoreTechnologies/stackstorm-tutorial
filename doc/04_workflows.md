@@ -30,6 +30,9 @@ parameters:
   date:
     type: string
     description: "The date [YYYY-MM-DD] of the APOD image to retrieve."
+  message:
+    type: string
+    description: "Extra message to publish with the URL"
   host:
     type: string
     default: "127.0.0.1"
@@ -87,6 +90,7 @@ tutorial.nasa_apod_rabbitmq_publish:
   type: direct
   input:
     - date
+    - message
     - host
     - exchange
     - exchange_type
@@ -109,7 +113,7 @@ tutorial.nasa_apod_rabbitmq_publish:
         exchange: "{{ _.exchange }}"
         exchange_type: "{{ _.exchange_type }}"
         routing_key: "{{ _.routing_key }}"
-        message: "{{ _.apod_url }}"
+        message: "{{ _.apod_url }}{%if _.message $} {{ _.message }}{% endif %}"
 ```
 
 -----------
@@ -132,5 +136,5 @@ st2 run tutorial.nasa_apod_rabbitmq_publish date="2018-07-04"
 Read from the queue to see if our message was delivered:
 
 ```shell
-rabbitmqadmin get queue=demoqueue
+rabbitmqadmin get queue=demoqueue count=10
 ```
