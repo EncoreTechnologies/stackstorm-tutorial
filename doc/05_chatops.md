@@ -207,7 +207,7 @@ long enough (2 minutes or 120 seconds) then the alias will be available. Alterna
 if we want the alias to be available immediately we can simply restart the service:
 
 ``` shell
-systemctl restart st2chatops
+sudo systemctl restart st2chatops
 ```
 
 ### Testing the Action Alias
@@ -215,7 +215,11 @@ systemctl restart st2chatops
 To invoke the action alias we will simply type the following string in chat:
 
 ``` shell
-!nasa apod twitter post Hello From ChatOps!!!
+# in a Private Message / Direct Message (DM)
+nasa apod twitter post date 2018-07-04 status Hello From ChatOps <your name here>!!!
+
+# if the bot is in a channel, need to make it !nasa
+!nasa apod twitter post date 2018-07-04 status Hello From ChatOps <your name here>!!!
 ```
 
 You should see a set of responses in the channel:

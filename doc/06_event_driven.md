@@ -47,7 +47,7 @@ st2ctl reload --register-configs
 Then we'll need to restart the Sensor so it uses the new configuration:
 
 ``` shell
-systemctl restart st2sensorcontainer
+sudo systemctl restart st2sensorcontainer
 ```
 
 ### Sensor Testing
@@ -298,6 +298,16 @@ Next we'll tell StackStorm about our action, so that our rule can invoke it:
 ``` shell
 st2ctl reload --register-actions
 ```
+
+### Invite your bot to #pyohio and #stackstorm
+
+In Slack, create two new channels and invite your bot!
+
+* `/open #pyohio`
+  * `/invite @StackStorm`
+* `/open #stackstorm`
+  * `/invite @StackStorm`
+
 
 ### Testing our Action and Workflow
 
