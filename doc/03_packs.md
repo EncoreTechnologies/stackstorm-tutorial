@@ -36,15 +36,11 @@ First, install the `rabbitmq` pack from the public
 st2 pack install rabbitmq
 ```
 
-## Configure 
+## Configure RabbitMQ queue
+
+Create a queue in RabbitMQ where messages will be sent
 
 ``` shell
-sudo rabbitmq-plugins enable rabbitmq_management
-sudo systemctl restart rabbitmq-server
-curl -O http://127.0.0.1:15672/cli/rabbitmqadmin
-sudo mv -f rabbitmqadmin /usr/bin/
-sudo chmod a+x /usr/bin/rabbitmqadmin
-
 rabbitmqadmin declare exchange name=demo type=topic durable=false
 rabbitmqadmin declare queue name=demoqueue
 rabbitmqadmin declare binding source=demo destination=demoqueue routing_key=demokey

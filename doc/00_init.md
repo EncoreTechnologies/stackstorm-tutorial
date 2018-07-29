@@ -19,18 +19,6 @@ SSH into your StackStorm host:
 ssh stackstorm@1.2.x.x
 ```
 
-If you're following along at home and logging into a CentOS host, login as `root`.
-
-```shell
-ssh root@stackstorm.doain.tld
-```
-
-If you're on Ubuntu, login as `ubuntu`:
-
-```shell
-ssh root@stackstorm.doain.tld
-```
-
 ## Authenticate
 
 In order to perform actions on the command line and/or API, you need a valid

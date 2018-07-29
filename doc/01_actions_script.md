@@ -16,27 +16,6 @@ Let's ensure this script works by running it:
 
 It worked, outputting the URL of the NASA Astronomy Picture Of the Day for July 4th 2018.
 
-
-**note** If you're running this on an ubuntu box you probably received this error:
-
-```shell
-$ /opt/stackstorm/packs/tutorial/etc/nasa_apod.py
-Traceback (most recent call last):
-  File "/opt/stackstorm/packs/tutorial/etc/nasa_apod.py", line 9, in <module>
-    import requests
-ImportError: No module named requests
-```
-
-To fix this we need to install the `requests` library:
-
-```shell
-# install pip
-sudo apt-get -y install python2-pip
-
-# install requests
-sudo pip install requests
-```
-
 ## Convert our script
 
 We can drop this script in to StackStorm, with no modifications, using the process
