@@ -5,6 +5,5 @@ sensor_config:
   password: "guest"
   rabbitmq_queue_sensor:
     queues:
-      - "pyohioqueue"
-      - "rabbitmqqueue"
+      - "demoqueue"
     deserialization_method: "json"

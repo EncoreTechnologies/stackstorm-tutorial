@@ -24,7 +24,7 @@ Copy `/opt/stackstorm/packs/rabbitmq/rabbitmq.yaml.example` to `/opt/stackstorm/
 sudo cp /opt/stackstorm/packs/rabbitmq/rabbitmq.yaml.example /opt/stackstorm/configs/rabbitmq.yaml
 ```
 
-Edit the file, changing `host` to `127.0.0.` and add the `demoqueue` to the `queues` parameter:
+Edit the file, changing `host` to `127.0.0.1` and add the `demoqueue` to the `queues` parameter:
 
 **NOTE** You'll need to edit this file with `sudo /opt/stackstorm/configs/rabbitmq.yaml`
 
@@ -64,7 +64,11 @@ sudo systemctl restart st2sensorcontainer
 
 ### Sensor Testing
 
-Post a new tweet with `#PyOhio` in the body.
+Publish a new message to RabbitMQ
+
+```shell
+st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topic routing_key=demokey message="test sensor"
+```
 
 Check StackStorm to ensure a new trigger instance was created.
 
