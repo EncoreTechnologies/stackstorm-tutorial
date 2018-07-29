@@ -1,0 +1,14 @@
+---
+name: "post_rabbitmq_to_slack"
+description: "Post RabbitMQ message to a Slack channel."
+enabled: true
+
+trigger:
+  type: "rabbitmq.new_message"
+  parameters: {}
+
+action:
+  ref: "tutorial.post_rabbitmq_to_slack"
+  parameters:
+    queue: "{{ trigger.queue }}"
+    body: "{{ trigger.body }}"

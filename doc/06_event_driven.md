@@ -73,74 +73,66 @@ st2 run rabbitmq.publish_message host=127.0.0.1 exchange=demo exchange_type=topi
 Check StackStorm to ensure a new trigger instance was created.
 
 ``` shell
-$ st2 trigger-instance list --trigger twitter.stream_matched_tweet
-+--------------------------+-------------------------+-------------------------+-----------+
-| id                       | trigger                 | occurrence_time         | status    |
-+--------------------------+-------------------------+-------------------------+-----------+
-| 5b4a1dd0a814c06e6e12dd6d | twitter.stream_matched_ | Sat, 14 Jul 2018        | processed |
-|                          | tweet                   | 15:59:12 UTC            |           |
-+--------------------------+-------------------------+-------------------------+-----------+
+$ st2 trigger-instance list --trigger rabbitmq.new_message
++--------------------------+----------------+-----------------+-----------+
+| id                       | trigger        | occurrence_time | status    |
++--------------------------+----------------+-----------------+-----------+
+| 5b5dce8e587be00afa97911f | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:26:22   |           |
+|                          |                | UTC             |           |
+| 5b5dce8e587be00afa979120 | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:26:22   |           |
+|                          |                | UTC             |           |
+| 5b5dce8e587be00afa97912b | rabbitmq.new_m | Sun, 29 Jul     | processed |
+|                          | essage         | 2018 14:26:22   |           |
+|                          |                | UTC             |           |
++--------------------------+----------------+-----------------+-----------+
 ```
 
 You can view the information contained in the trigger like so:
 
 ``` shell
-$ st2 trigger-instance get 5b4a1dd0a814c06e6e12dd6d
-+-----------------+--------------------------------------------------------------+
-| Property        | Value                                                        |
-+-----------------+--------------------------------------------------------------+
-| id              | 5b4a1dd0a814c06e6e12dd6d                                     |
-| trigger         | twitter.stream_matched_tweet                                 |
-| occurrence_time | 2018-07-14T15:59:12.616000Z                                  |
-| payload         | {                                                            |
-|                 |     "lang": "en",                                            |
-|                 |     "url": "https://twitter.com/NickMaludyDemo/status/101816 |
-|                 | 3007640231936",                                              |
-|                 |     "text": "Hello #NickTest",                               |
-|                 |     "created_at": "Sat Jul 14 15:59:12 +0000 2018",          |
-|                 |     "place": null,                                           |
-|                 |     "user": {                                                |
-|                 |         "screen_name": "NickMaludyDemo",                     |
-|                 |         "description": null,                                 |
-|                 |         "name": "NickMaludyDemo",                            |
-|                 |         "location": null                                     |
-|                 |     },                                                       |
-|                 |     "retweet_count": 0,                                      |
-|                 |     "id": 1018163007640231936,                               |
-|                 |     "favorite_count": 0                                      |
-|                 | }                                                            |
-| status          | processed                                                    |
-+-----------------+--------------------------------------------------------------+
+$ st2 trigger-instance get 5b5dce8e587be00afa97912b
++-----------------+-----------------------------+
+| Property        | Value                       |
++-----------------+-----------------------------+
+| id              | 5b5dce8e587be00afa97912b    |
+| trigger         | rabbitmq.new_message        |
+| occurrence_time | 2018-07-29T14:26:22.482000Z |
+| payload         | {                           |
+|                 |     "queue": "demoqueue",   |
+|                 |     "body": "test sensor"   |
+|                 | }                           |
+| status          | processed                   |
++-----------------+-----------------------------+
 ```
 
 ## Configure the Rule
 
-The rule that we're going to write will match the `twitter.stream_matched_tweet` trigger
-and invoke an action to post this tweet to Slack (**note**: the action doesn't exist
+The rule that we're going to write will match the `rabbitmq.new_message` trigger
+and invoke an action to post this message to Slack (**note**: the action doesn't exist
 yet, but we'll be creating it in the upcoming steps).
 
 Rules live in a pack's `rules/` directory and are defined as YAML metadata files.
 
-Create a new rule file in `/opt/stackstorm/packs/tutorial/rules/post_tweet_to_slack.yaml`:
+Create a new rule file in `/opt/stackstorm/packs/tutorial/rules/post_rabbitmq_to_slack.yaml`:
 with following content:
 
 ``` yaml
 ---
-name: "post_tweet_to_slack"
-description: "Post Tweet to a Slack channel."
+name: "post_rabbitmq_to_slack"
+description: "Post RabbitMQ message to a Slack channel."
 enabled: true
 
 trigger:
-  type: "twitter.stream_matched_tweet"
+  type: "rabbitmq.new_message"
   parameters: {}
 
 action:
-  ref: "tutorial.post_tweet_to_slack"
+  ref: "tutorial.post_rabbitmq_to_slack"
   parameters:
-    message: "{{ trigger.text }}"
-    handle: "@{{ trigger.user.screen_name }}"
-    date: "{{ trigger.created_at }}"
-    url: "{{ trigger.url }}"
+    queue: "{{ trigger.queue }}"
+    body: "{{ trigger.body }}"
 ```
 
 -----------
@@ -148,7 +140,7 @@ action:
 If you're struggling and just need the answer, simply copy the file from our
 answers directory:
 ```shell
-cp /opt/stackstorm/packs/tutorial/etc/answers/rules/post_tweet_to_slack.yaml /opt/stackstorm/packs/tutorial/rules/post_tweet_to_slack.yaml
+cp /opt/stackstorm/packs/tutorial/etc/answers/rules/post_rabbitmq_to_slack.yaml /opt/stackstorm/packs/tutorial/rules/post_rabbitmq_to_slack.yaml
 ```
 -----------
 

@@ -1,0 +1,14 @@
+---
+name: post_rabbitm_to_slack
+pack: tutorial
+description: "Post a RabbitMQ message to Slack"
+runner_type: "mistral-v2"
+enabled: true
+entry_point: workflows/post_rabbitmq_to_slack.yaml
+parameters:
+  queue:
+    type: string
+    description: "Queue the message was received on"
+  body:
+    type: string
+    description: "Body of the message"

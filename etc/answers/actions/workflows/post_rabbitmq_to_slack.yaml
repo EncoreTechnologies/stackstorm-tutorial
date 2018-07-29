@@ -1,0 +1,28 @@
+version: '2.0'
+
+tutorial.post_rabbitmq_to_slack:
+  type: direct
+  input:
+    - queue
+    - body
+    
+  tasks:
+    channel_branch:
+      action: std.noop
+      publish:
+        chat_message: "Received a message on RabbitMQ queue {{ _.queue }}\n {{ _.body }}"
+      on-complete:
+        - post_to_pyohio: "{{ '#pyohio' in _.body }}"
+        - post_to_stackstorm: "{{ '#stackstorm' in _.body }}"
+        
+    post_to_pyohio:
+      action: chatops.post_message
+      input:
+        message: "{{ _.chat_message }}"
+        channel: "#pyohio"
+        
+    post_to_stackstorm:
+      action: chatops.post_message
+      input:
+        message: "{{ _.chat_message }}"
+        channel: "#stackstorm"
