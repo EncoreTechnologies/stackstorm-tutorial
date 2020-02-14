@@ -1,4 +1,4 @@
-# Convert exiting Pythong script into a StackStorm action
+# Convert exiting Python script into a StackStorm action
 
 For our first action we're going to convert an existing python script into a
 StackStorm action. Our existing python script lives in [etc/nasa_apod.py](etc/nasa_apod.py). 
