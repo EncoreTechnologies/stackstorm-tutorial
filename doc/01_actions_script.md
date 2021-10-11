@@ -31,7 +31,7 @@ cp /opt/stackstorm/packs/tutorial/etc/nasa_apod.py /opt/stackstorm/packs/tutoria
 ```
 
 Now we need to create an Action Metadata file that tells StackStorm how to execute
-our script. Action metadat files are written in YAML. They provide information to 
+our script. Action metadata files are written in YAML. They provide information to 
 StackStorm such as script location, and input parameters. 
 
 Create an action metadata file `/opt/stackstorm/packs/tutorial/actions/nasa_apod.yaml`
